@@ -1,0 +1,16 @@
+/*
+Copy values from one range to another 
+*/
+function testCopyTo2() {
+  try {
+    let source = SpreadsheetApp.getActiveSpreadsheet();
+    let pageSource = source.getSheetByName("Raw")
+    let pageDest = source.getSheetByName("destination");
+    let rangeDest = pageDest.getRange("A1:E22");
+    let range = pageSource.getRange("A1:E22");
+    range.copyTo(rangeDest);
+  }
+  catch(err) {
+    console.log(err);
+  }
+}
