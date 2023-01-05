@@ -1,0 +1,45 @@
+/*
+when using URL of an image store in Google Drive, change the URL in the sheet for the image
+*/
+
+
+function testImage() {
+  // Identifies the sheet link to the Google Sheet and the tab you will be working with
+  // you can also use const sheet = SpreadsheetApp.getActiveSpreadsheet()
+  //                                              .getSheetId("[ID_OF_THE_SHEET]"); 
+  // if the Script is not bound to the sheet. 
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
+
+  // Gets the range and the values where the URLs of the images are located. 
+  // in my example there are in the column B
+  let range_1 = sheet.getRange("B2:B").getValues().flat();
+
+  // Filters the rows without values or empty
+  range_1 = range_1.filter((element) => {return (element !== '')});
+
+  // Start of the loop to run on each row with URLs
+  for (let i=0; i< range_1.length ; i++){
+    let row = range_1[i];
+
+    // For this sample, I replace the URL with the word "Done" to prevent duplicates later on in the Script
+    // This can be skip or replace place it, in a different location. 
+    if (row != "Done"){
+
+      // Replace the URL from https://drive.google.com/open?id=[ID_OF_THE_FILE] 
+      // to =IMAGE("https://lh3.googleusercontent.com/d/[ID_OF_THE_FILE]
+      let temp_imageURL = row.toString().replace('https://drive.google.com/open?id=', 
+      '=IMAGE("https://lh3.googleusercontent.com/d/');
+
+      // However, the process is not complete yet, we need to complete the formula
+      // so we added the last part ",4,60,60) to the URL 
+      // making it "https://lh3.googleusercontent.com/d/[ID_OF_THE_FILE]",4,60,60)
+      let imageURL = temp_imageURL+'",4,60,60)';
+
+      // place the coplete formula in the current iteration, row 3 (which is row C)     
+      sheet.getRange(i+2,3).setValue(imageURL);
+
+      // replace the current URL in Row 2 (which is row B) with the word "Done"
+      sheet.getRange(i+2,2).setValue("Done");
+    }
+  }
+} 
