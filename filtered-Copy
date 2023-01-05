@@ -1,0 +1,41 @@
+/*
+copy a row of filtered date from one worksheet to another 
+*/
+
+
+function filteredCopy() {
+
+  // rename the sheets with the actual name of your worksheets. 
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sourceSheet = sheet.getSheetByName('raw');
+  const temp_targetSheet = sheet.getSheetByName('filter_data_raw');
+  const targetSheet = sheet.getSheetByName('target');
+
+  // gets the filter data
+  let sourceRange = sourceSheet.getFilter().getRange();
+
+  // copy and past the data in the helper worksheet
+  sourceRange.copyTo(
+    temp_targetSheet.getRange('A1'),
+    SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+
+  // select the column that you want to copy, for my dummy data I used the column E
+
+  let range_1 = temp_targetSheet.getRange("E:E");
+
+  // copy the column to A1, you can use AP2 base on your code
+  range_1.copyTo(
+    targetSheet.getRange('A1'),
+    SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+
+  // make sure that all the values in the sheet is up to date
+
+  SpreadsheetApp.flush()
+
+  // clear the information on the temp sheet, to make sure everything ready for a new run
+
+  temp_targetSheet.getDataRange().clearFormat();
+  temp_targetSheet.getDataRange().clearContent();
+}
