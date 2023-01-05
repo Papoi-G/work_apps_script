@@ -1,0 +1,33 @@
+/*
+change color of a cell when the payment is due soon 
+*/
+
+function paymentTracker() {
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.getActiveSheet();
+  const rg = sh.getRange(2, 11, sh.getLastRow() - 1, sh.getLastColumn() - 11);
+  rg.setFontColor("black")
+  const vs = rg.getDisplayValues();
+  const d = new Date();
+  //Logger.log('y: %s,m: %s,d: %s', d.getFullYear(), d.getMonth(), d.getDate());
+  const dt = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const dtv = dt.valueOf();
+  const dt3 = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 3);
+  const dt3v = dt3.valueOf();
+  vs.forEach((r, i) => {
+    let ds = r.map(ds => {
+      let t = ds.split('/');
+      //Logger.log(JSON.stringify(t))
+      let v = new Date(Number(t[2]), Number(t[1]) - 1, Number(t[0])).valueOf();
+      let diff3 = dt3v - v;
+      if (dt3v == v) {
+        return "yellow";
+      } else if (dtv == v) {
+        return "green";
+      } else {
+        return "pink";
+      }
+    });
+    sh.getRange(i + 2, 11, 1, ds.length).setBackgrounds([ds]);
+  })
+}
