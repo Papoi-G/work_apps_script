@@ -1,0 +1,16 @@
+/*
+Simple menu to refresh all the formulas in a Google Sheet when they get errors due to cache
+*/
+
+
+function onOpen(e) {
+  SpreadsheetApp.getUi()
+    .createMenu('Fix import errors')
+    .addItem('Refresh Sheet', 'flushErros')
+    .addToUi();
+}
+
+function flushErros() {
+  const sheet = SpreadsheetApp.getActiveSheet();
+  SpreadsheetApp.flush();
+}
