@@ -1,0 +1,55 @@
+/*
+Find a replace data base on what is selected in a drop-down
+*/
+
+
+function onEdit(e) {
+
+  // you need to add the name of your sheet 
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1'); 
+
+  // Automatically gets the range that was edited 
+  const range = e.range;
+
+  // Gets the A1 notation of the cell example 'B2'
+  let current_cell =range.getA1Notation();
+
+  // Gets the vale in the range that was modify 
+  // In this case the value inside the drop-down 
+
+  let value_selected = sheet.getRange(current_cell).getValue();
+  
+  // Gets the column that was edited 
+  col = range.getColumn();
+
+  // My drowp-down was in column B
+  // This if will filter only the changes on column B, and excludes the rest
+  // you can change this to the column where you drop-down is located
+  if (col == 2){
+
+    //Gets the number of row where the value in column B was change
+    let row = range.getRow();   
+
+    // The data I was searching was in column 1, so I use 'A'+row
+    // You can replace the A for the column where the search will be done
+    new_cell = sheet.getRange('A'+row).getValue();
+    
+    // Searchs all the values in column A
+    // that match the one next to the value edited
+    list = sheet.createTextFinder(new_cell).findAll();
+    
+    // Loops inside the list of array that was created with the search
+    for (let i = 0; i < list.length; i++){
+
+      let ranges_info = list[i];
+      
+      // Gets the row in each iteration of the range inside 'list'
+      let ranges_row = ranges_info.getRow();
+
+      // set the value, I selected in the first drop-down
+      // to the rest of the cells in B that match the same value in A
+      sheet.getRange('B' + ranges_row).setValue(value_selected)
+    };
+
+  }
+}
