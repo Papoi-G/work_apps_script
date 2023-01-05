@@ -1,0 +1,103 @@
+/*
+HTML email temp
+*/
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  <style>
+  body {
+    text-align: Left;
+    font-family: Roboto, Helvetica, sans-serif;
+    font-size: 15px
+  }
+  </style>
+  </head>
+  <body>
+  <h1>Case Assignment</h1>
+<p></p>
+<p>Hello <?= agent ?>!</p>
+<p>The following case has just been assigned to you:</p>
+<p>Case: <?= casen ?></p>
+<p><b> Link: </b> http://vector/<?= casen ?></p>
+<p> Assigned by: <?= tassigned ?> </p>
+<p> The case was assigned at: <?= time ?>  </p>
+<p><span style="color: #24802a; font-family:ubuntu, Helvetica"><strong> Priority: <?= sla ?> <?= prio ?></strong></span></p>
+<p></p>
+<p> Please work on the case as soon as possible.  </p>
+<p></p>
+<p> Thanks!</p>  
+  </body>
+</html>
+
+
+/*
+sent email base on Google Sheet and the HTML email temp
+*/
+
+function PQM_email() {
+  //variables for email
+ 
+  var vTime = 0;
+  var vcasen = 1;
+  var vagent = 2;
+  var vtassigned = 3;
+  var vprio = 4;
+  var vsla = 5;
+  var vemail = 13;
+
+
+  //variable for function 
+  var rname = "TICA Devices";
+  var Sent_email = "Sent_email";
+
+  //calling the Google sheet that will be use. 
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var ws = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
+  var lr = ws.getLastRow();
+
+  //variable for the "for" function 
+  var startRow = 25310;
+  var numRows = lr;
+  var dataRange = sheet.getRange(startRow, 1, numRows, 15);
+  var data = dataRange.getValues();
+
+  // "for" function starts to get the information for the email template 
+  // from each row of the table
+  for(var i = 0; i < data.length ;i++){
+     //variables under row 
+     var row = data [i];
+     var Emailtemp = HtmlService.createTemplateFromFile("Htemp");
+     var emailSent = row [14];
+
+     //assining info in the email 
+     Emailtemp.time = row[vTime];
+     Emailtemp.casen = row[vcasen];
+     Emailtemp.agent = row[vagent];
+     Emailtemp.tassigned = row[vtassigned];
+     Emailtemp.prio = row[vprio];
+     Emailtemp.sla = row[vsla];
+
+      // if starts to prevent duplicates and to sent the email
+
+      if(emailSent !== Sent_email && row [13] !== ""){
+        var htmlmessage = Emailtemp.evaluate().getContent();
+
+        // starting the email process 
+        GmailApp.sendEmail(
+          row [vemail],
+          "TICA Devices - PQM assignments",
+          "You email doesn't support Html.",{
+            name:rname, htmlBody: htmlmessage,
+          }
+        );
+          sheet.getRange(startRow + i ,15).setValue(Sent_email); 
+          SpreadsheetApp.flush();
+      } 
+      else{
+      }
+  }
+}
+
+
