@@ -1,0 +1,91 @@
+/*
+Nested dropdowns base on information selected in the last dropdown
+*/
+
+
+
+var ws = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+var wsopt = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("sorted items");
+var opts = wsopt.getRange(2, 1, wsopt.getLastRow() - 1, 13).getValues();
+var firstlevelcolumn = 2;
+var secondlevelcolumn = 5;
+var thirdlevelcolumn = 6;
+var wsopt2 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("supplier details");
+var opts2 = wsopt2.getRange(3, 1, wsopt2.getLastRow() - 1, 12).getValues();
+
+
+
+function onEdit(e) {
+  var activecell = e.range;
+  var val = activecell.getValue();
+  var r = activecell.getRow();
+  var c = activecell.getColumn();
+  var wsName = activecell.getSheet().getName();
+  if (wsName == "JPS") {
+    if (wsName == "JPS" && c == firstlevelcolumn && r > 2) { applyFirstLevelValidation(val, r); }
+    if (wsName == "JPS" && c == secondlevelcolumn && r > 2) { applySecondLevelValidation(val, r); }
+  }//JPS
+  else if (wsName == "DDNI") {
+    if (wsName == "DDNI" && c == firstlevelcolumn && r > 2) { applyFirstLevelValidation(val, r); }
+    if (wsName == "DDNI" && c == secondlevelcolumn && r > 2) { applySecondLevelValidation(val, r); }
+  }//DDNI
+}//close onEdiT
+
+function applyFirstLevelValidation(val, r) {
+  if (val === "") {
+    ws.getRange(r, secondlevelcolumn).clearContent();
+    ws.getRange(r, secondlevelcolumn).clearDataValidations();
+    ws.getRange(r, thirdlevelcolumn).clearContent();
+    ws.getRange(r, thirdlevelcolumn).clearDataValidations();
+  } else {
+    ws.getRange(r, secondlevelcolumn).clearContent();
+    ws.getRange(r, secondlevelcolumn).clearDataValidations();
+    ws.getRange(r, thirdlevelcolumn).clearContent();
+    ws.getRange(r, thirdlevelcolumn).clearDataValidations();
+    var filteredopts = opts.filter(function (o) { return o[0] === val });
+    var listToApply = filteredopts.map(function (o) { return o[1] });
+    var cell = ws.getRange(r, secondlevelcolumn);
+    applyValidationToCell(listToApply, cell);
+  }//close else
+}//close applyFirstLevelValidation
+
+function applySecondLevelValidation(val, r) {
+  if (val === "") {
+    ws.getRange(r, thirdlevelcolumn).clearContent();
+    ws.getRange(r, thirdlevelcolumn).clearDataValidations();
+  } else {
+    ws.getRange(r, thirdlevelcolumn).clearContent();
+    ws.getRange(r, thirdlevelcolumn).clearDataValidations();
+    var firstlevelcolvalue = ws.getRange(r, firstlevelcolumn).getValue();
+    console.log(firstlevelcolvalue);
+
+    let counter = 0
+
+    var filteredopts2 = opts2.filter(
+      function (o) {
+        if(counter == 72){
+          console.log("Values evaluated: " + o[6] + ", " + firstlevelcolvalue);
+          console.log("types: " + typeof(o[6]) + " === " + typeof(firstlevelcolvalue) + ": " + (o[6] === firstlevelcolvalue));
+          console.log("Values evaluated: " + o[4] + ", " + val);
+          console.log("types: " + typeof(o[4]) + " === " + typeof(val) + ": " + (o[4] === val));
+          console.log(o[6] === firstlevelcolvalue && o[4] === val);
+        }
+
+        counter ++
+
+        return o[6] === firstlevelcolvalue && o[4] === val
+
+      }
+    );
+
+    console.log(filteredopts2);
+    var listToApply2 = filteredopts2.map(function (o) { return o[0] });
+    var cell2 = ws.getRange(r, thirdlevelcolumn);
+    applyValidationToCell(listToApply2, cell2);
+  }//close else
+}
+
+function applyValidationToCell(list, cell) {
+  var rule = SpreadsheetApp.newDataValidation().requireValueInList(list).build();
+  cell.setDataValidation(rule);
+}
