@@ -1,0 +1,55 @@
+/*
+example of XML services using apps script using URL https://ex1.svfeeds.com/ which has a table
+*/
+
+function parseXml() {
+
+  // URL where the data is located and calling the URL fetch servuces. 
+  let url = "https://ex1.svfeeds.com/";
+  let xml = UrlFetchApp.fetch(url).getContentText();
+  let document = XmlService.parse(xml);
+  let root = document.getRootElement();
+
+  // path to reach the raw data
+  let body = root.getChild('body');
+  let table = body.getChild('table');
+  let tbody = table.getChild('tbody');
+  let rows = tbody.getChildren('tr');
+
+  // enpty variable, it will be updated with the new array
+  // with the data of the table
+  let tableData = [];
+
+  // starts the for loop to each of the rows and columns of the HTML table
+
+  for (let i = 0;  i < rows.length; i++){
+
+    var columns = rows[i].getChildren('td');
+    
+    if (columns.length == 0){
+      columns = rows[i].getChildren('th');
+    }
+
+    // enpty variable, it will be updated with the new array
+    // with the information in the rows 
+  
+    var rowValues = []
+
+    // new "for" that will call the values in each cell in the table
+
+    for (var j = 0;  j < columns.length; j++){
+      var cell = columns[j].getValue();
+
+      // push the cell values to the rows
+
+      rowValues.push(cell);
+    }
+
+    // push the values to the complete table
+
+    tableData.push(rowValues);
+  }
+
+  return tableData;
+
+}
