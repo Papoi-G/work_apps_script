@@ -1,0 +1,22 @@
+/*
+add time and date, depending of which cell is selected
+*/
+
+
+    function TIMESTAMP() 
+    {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var sheet = ss.getActiveSheet();
+      var addedDateAndTime1 = Utilities.formatDate(new Date(), 
+      ss.getSpreadsheetTimeZone(), "MMMM d, yyyy");
+      var addedDateAndTime2 = Utilities.formatDate(new Date(), 
+      ss.getSpreadsheetTimeZone(), "hh:mm:ss a");
+      //Optional if you only want the date: var addedDate = Utilities.formatDate(new Date, ss.getSpreadsheetTimeZone(), "dd/MM/yyyy");
+      //Optional if you only want the time: var addedTime = Utilities.formatDate(new Date, ss.getSpreadsheetTimeZone(), "hh:mm:ss");
+      //sheet.getRange(1,1).setValue(addedDateAndTime)
+      sheet.getCurrentCell().offset(0, 0).activate();
+      sheet.getActiveRangeList().setValue(addedDateAndTime1);
+
+      sheet.getCurrentCell().offset(0, 1).activate();
+      sheet.getActiveRangeList().setValue(addedDateAndTime2);
+    };
