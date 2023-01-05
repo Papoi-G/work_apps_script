@@ -1,0 +1,51 @@
+/*
+create event base on a Google sheet 
+*/
+
+function event() {
+ var spreadsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 5");
+ var calendarID = spreadsheet.getRange("I2").getValue();
+ var eventCal = CalendarApp.getCalendarById(calendarID);
+
+ var startRow = 2;
+ var numRows = spreadsheet.getLastRow ();
+ var numColumns = 7;
+ var dataRange = spreadsheet.getRange(startRow,1,numRows-1,numColumns);
+ var data = dataRange.getValues();
+
+ var complete = "Done";
+
+ for (var i = 0; i < data.length; ++i){
+   var row = data [i];
+   var name = row [2];
+   var startTime = row [3];
+   var endTime = row [4];
+   var email = row [1];
+   var title = row [5];
+   var eventID = row [6];
+   if (startTime < endTime){
+      if (eventID !== complete && row [2] !== ""){
+        var currentCell = spreadsheet.getRange(startRow+i,numColumns);
+        eventCal.createEvent(name + " - " + title, startTime, endTime, {
+          guests: email, description: name + '\r\n' + title
+        });
+        
+        currentCell.setValue (complete);
+
+      }
+    }
+    else{
+      temp_value = startTime;
+      startTime = endTime;
+      endTime = temp_value;
+      if (eventID !== complete && row [2] !== ""){
+        var currentCell = spreadsheet.getRange(startRow+i,numColumns);
+        eventCal.createEvent(name + " - " + title, startTime, endTime, {
+          guests: email, description: name + '\r\n' + title
+        });
+        
+        currentCell.setValue (complete);
+      }     
+    }
+  }
+}
