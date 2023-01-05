@@ -1,0 +1,33 @@
+/*
+creates an URL base on information in column A with a base URL hardcode
+*/
+
+function makeLinks() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('test');
+  let rangeWord = ss.getRange("A2:A").getValues().flat();
+  let link =  'https://www.google.com/search?q=';
+
+  rangeWord = rangeWord.filter((element) => {return (element !== '')});
+
+  for (let i=0; i< rangeWord.length ; i++){
+    ss.getRange(i+2,2).setValue(link+rangeWord[i]);
+  };
+}
+
+
+/*
+creates an URL base on information in column A with URL in column B
+*/
+
+function makeLinks2() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('test 3');
+  let rangeWord = ss.getRange("A2:A").getValues().flat();
+  let rangeLinks = ss.getRange("B2:B").getValues().flat();
+
+  rangeWord = rangeWord.filter((element) => {return (element !== '')});
+  rangeLinks = rangeLinks.filter((element) => {return (element !== '')});
+
+  for (let i=0; i< rangeWord.length ; i++){
+    ss.getRange(i+2,3).setValue(rangeLinks[i]+rangeWord[i]);
+  };
+}
