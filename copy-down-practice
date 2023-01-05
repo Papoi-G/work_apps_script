@@ -1,0 +1,37 @@
+/*
+fill out the data in column c
+*/
+
+
+function fillDownFunctionC() {
+  var ss= ss= SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  var lastsheetrow = ss.getLastRow() //last row with data
+  
+  //last row in the autofill range with data
+  var lastrangerow = ss.getRange("C1:C").getNextDataCell(SpreadsheetApp.Direction.DOWN).getRow()
+  
+  var sourcerange = ss.getRange(2, 3,lastrangerow-1) //in your screenshot, this would be column C2:C
+  var destinationrange = ss.getRange(2, 3, lastsheetrow-1) //This would be C2:C
+    
+  sourcerange.autoFill(destinationrange, SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES)
+
+}
+
+/*
+fill out the data in column b
+*/
+
+
+function fillDownFunctionB() {
+  var ss= SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Callback form");
+  var lastsheetrow = ss.getLastRow() //last row with data
+  
+  //last row in the autofill range with data
+  var lastrangerow = ss.getRange("B1:B").getNextDataCell(SpreadsheetApp.Direction.DOWN).getRow()
+  
+  var sourcerange = ss.getRange(2, 2,lastrangerow-1) //in your screenshot, this would be B2:B6
+  var destinationrange = ss.getRange(2, 2, lastsheetrow-1) //This would be B2:B12
+  
+  sourcerange.autoFill(destinationrange, SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES)
+
+}
