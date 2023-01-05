@@ -39,3 +39,36 @@ function filteredCopy() {
   temp_targetSheet.getDataRange().clearFormat();
   temp_targetSheet.getDataRange().clearContent();
 }
+
+
+
+
+
+-----------------------------
+function filteredCopy() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sourceSheet = sheet.getSheetByName('raw');
+  const temp_targetSheet = sheet.getSheetByName('filter_data_raw');
+  const targetSheet = sheet.getSheetByName('target');
+
+  let sourceRange = sourceSheet.getFilter().getRange();
+
+
+
+  sourceRange.copyTo(
+    temp_targetSheet.getRange('A1'),
+    SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+
+  let range_1 = temp_targetSheet.getRange("E:E");
+  range_1.copyTo(
+    targetSheet.getRange('A1'),
+    SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+  
+  SpreadsheetApp.flush();
+
+  temp_targetSheet.getDataRange().clearContent();
+  temp_targetSheet.getDataRange().clearFormat();
+}
+
