@@ -1,0 +1,17 @@
+/* 
+Add an import range formula in a Google Sheet
+When the site has multiple pages
+*/
+
+function addFormula() {
+  
+  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+
+  for (let i = 1; i <= 10; i++){
+    let URL = '"https://www.fifaindex.com/?page='+ i +'"';
+    let formula = '=IMPORTHTML(' + URL +',"table",1)';
+    ss.appendRow([formula]);
+    Utilities.sleep(163636);
+
+  }
+}
