@@ -1,0 +1,51 @@
+function testNew_2() {
+
+  //variables to get information of the sheet including the range with the date and time 
+  let spreedsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Tabela wyników');
+  let rangeDate = spreedsheet.getRange("B12:B").getValues().flat();
+  let rangeTime = spreedsheet.getRange("C12:C").getValues().flat();
+    // filter and removes all the empty cells 
+
+  rangeDate = rangeDate.filter((element) => {return (element !== '')});
+  rangeTime = rangeTime.filter((element) => {return (element !== '')});
+
+  // This will format the current time and date 
+  //so the protected range will be base in the time of the sheet
+  // not midnight of the current time
+  let now_datetime = new Date();
+  let now_date = now_datetime.toLocaleDateString();
+  let now_time = now_datetime.toLocaleTimeString();
+  let now = now_date + " "+  now_time;
+  
+
+
+
+  // merge the cell with the time and the date 
+  // and follow the same format as "now" 
+
+  let rangeDateTime = rangeDate.map(function(value,idx){
+    time_info = rangeTime[idx].toLocaleTimeString();
+    date_info = new Date(value).toLocaleDateString();   
+    let newDateObj = date_info + " "+ time_info;
+    return newDateObj
+  });
+
+  // adds the protected rage, it will remove all the users 
+  // exept the one running the script
+
+  for (let i = 0; i < rangeDateTime.length; i++) {
+    let row = rangeDateTime[i];
+    //range H12:I12 and forward
+    let range = spreedsheet.getRange(i+12,8,1,2);
+    if(row <= now){
+      let protection = range.protect().setDescription('Sample protected range');
+      var me = Session.getEffectiveUser();
+      protection.addEditor(me);
+      protection.removeEditors(protection.getEditors());
+      if (protection.canDomainEdit()) {
+        protection.setDomainEdit(false);
+      }
+    }
+  };
+  
+}
