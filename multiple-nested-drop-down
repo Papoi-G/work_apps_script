@@ -1,0 +1,80 @@
+
+
+// The script makes dropdonw menu from the date from the sheet Validation
+// Every next menu based on previous selectected parent menus
+
+function reset() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var table = ss.getSheetByName('Validation').getDataRange().getValues().slice(1);
+  var obj = parse_table_to_object(table);
+
+  var sh = ss.getActiveSheet();
+  var list = Object.keys(obj);
+
+  sh.getRange('a2:f4').clearContent().clearDataValidations();
+  ['a2','a3','a4'].forEach(rng => { set_data_validation(sh.getRange(rng), list) });
+  sh.getRange('a2:a4').clearContent();
+}
+
+function onEdit(e) {
+  var ss = e.source;
+  var sh = e.range.getSheet();
+
+  var sheets = ['Sheet1', 'Sheet2'];
+  if (!sheets.includes(sh.getName())) return;
+
+  var row = e.range.rowStart;
+  if (row < 2) return;
+
+  var last_col = 6;
+  var col = e.range.columnStart;
+  if (col >= last_col) return;
+
+  sh.getRange(row, col + 1, 1, last_col - col).clearContent().clearDataValidations();
+  var values = sh.getRange(row, 1, 1, last_col).getValues().flat();
+  var next_cell = sh.getRange(row, col+1);
+
+  var table = ss.getSheetByName('Validation').getDataRange().getValues().slice(1);
+  var obj = parse_table_to_object(table);
+
+  col--;
+  var new_obj = JSON.parse(JSON.stringify(obj));
+  for (let i=0; i<=col; i++) new_obj = new_obj[values[i]];
+  var list = Object.keys(new_obj);
+  set_data_validation(next_cell, list);
+
+  // if there is only one element in the list set the element and repeat for next cells
+  while (list.length == 1 && col < last_col-1) {
+    col++;
+    next_cell.setValue(list[0]);
+    values[col] = list[0];
+    var new_obj = JSON.parse(JSON.stringify(obj));
+    for (let i=0; i<=col; i++) new_obj = new_obj[values[i]];
+    var list = Object.keys(new_obj);
+    var next_cell = sh.getRange(row, col+2);
+    if (col < last_col-1) set_data_validation(next_cell, list);
+  }
+}
+
+function set_data_validation(cell, list) {
+  var rule = SpreadsheetApp.newDataValidation().requireValueInList(list).setAllowInvalid(false).build();
+  if (list.length > 1) cell.setDataValidation(rule);
+}
+
+function parse_table_to_object(table) {
+  var obj = {};
+  for (let row of table) fill_obj(row, obj);
+  return obj;
+  
+  // console.log(JSON.stringify(obj, undefined, '  '));
+
+  function fill_obj(arr, o) {
+    var key = arr.shift();
+    if (arr.length == 0) return o[key] = {};
+    if (key in o) return fill_obj(arr, o[key]);
+    o[key] = {};
+    return fill_obj(arr, o[key]);
+  }
+}
+
+
