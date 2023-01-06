@@ -1,0 +1,12 @@
+function format() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+  const range = sheet.getRange("B6:E").getValues();
+  let formula = '=INT((TODAY()-D?)/365)';
+
+  for (let i = 0; i < range.length ; i++){
+    let row = range[i];
+    if(row[2] !== ''){
+      sheet.getRange(i+6,5).setValue(formula.replace('?',i+6));
+    };
+  };
+}
