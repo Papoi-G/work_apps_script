@@ -1,0 +1,105 @@
+function Split_by_tags2() {
+
+  // Get the sheets you will work with by the name of the tab
+
+  const ss_posts = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Posts Sheet");
+  const ss_tags = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Tags Sheet");
+  const ss_output = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Expected Output");
+
+  // Get the range of the columns to of "Posts Sheet" we will work with
+  // If range_1 is the ID, range 2 is the title, range 3 is tags
+  // If you change the columns in the future, you only need to update this part
+
+  let range_1 = ss_posts.getRange("A2:A").getValues().flat();
+  let range_2 = ss_posts.getRange("B2:B").getValues().flat();
+  let range_3 = ss_posts.getRange("C2:C").getValues().flat();
+ 
+    // filter the arrays information to only the cells with values for "Posts Sheet"
+  // This way, you can add new information to the tags rows and they will be added
+
+  range_1 = range_1.filter((element) => {return (element !== '')});
+  range_2 = range_2.filter((element) => {return (element !== '')});
+  range_3 = range_3.filter((element) => {return (element !== '')});
+ 
+
+  // The values we will compare the tags with in arrays
+
+  let range_type = ss_tags.getRange("A2:A").getValues().flat();
+  let range_location = ss_tags.getRange("B2:B").getValues().flat();
+  let range_category = ss_tags.getRange("C2:C").getValues().flat();
+
+  // filter the arrays information to only the cells with values for "Tags Sheet"
+  // This way, you can add new information to the tags rows and they will be added 
+
+  range_type = range_type.filter((element) => {return (element !== '')});
+  range_location = range_location.filter((element) => {return (element !== '')});
+  range_category = range_category.filter((element) => {return (element !== '')});
+
+  // new Arrays where the information will be sort, I added a new tag option called "Other" 
+  // just in case the information in the column 2 has a value which is not under "Tags Sheet"
+  let type_tag = [];
+  let location_tag = [];
+  let category_tag = [];
+  let other_tag = [];
+
+  // for to copy the ID from "Posts Sheet" to "Expected Output"
+
+  for (let i=0; i< range_1.length ; i++){
+      ss_output.getRange(i+2,1).setValue(range_1[i]);    
+    };
+
+  // for to copy the title from "Posts Sheet" to "Expected Output"
+
+  for (let j=0; j< range_2.length ; j++){
+      ss_output.getRange(j+2,2).setValue(range_2[j]);    
+    };
+
+  // fuction to sort the tags from "Posts Sheet" base in "Tags Sheet" 
+
+  function Separete_value(value_array){
+    startrow = 1
+      
+    for (let k=0; k < value_array.length; k++){
+
+      if(range_type.includes(value_array[k])){
+        type_tag.push(value_array[k]);
+      }
+      else if(range_location.includes(value_array[k])){
+        location_tag.push(value_array[k]);
+      }
+      else if(range_category.includes(value_array[k])){
+        category_tag.push(value_array[k]);
+      }
+      else{
+        other_tag.push(value_array[k]);
+      }
+                   
+    };
+  } 
+
+  // Function to empty the arrays for the next loop
+
+  function Empty_value(){
+    type_tag = [];
+    location_tag = [];
+    category_tag = [];
+    other_tag = []; 
+  }
+
+  // for to add the values we sorted to "Expected Output"
+      
+  for (let e=0; e < range_3.length; e++ ){
+    let value_array = range_3[e].split(', ');  
+    Separete_value(value_array)
+    ss_output.getRange(e+2,3).setValue(type_tag.join(", "));
+    ss_output.getRange(e+2,4).setValue(category_tag.join(", "));
+    ss_output.getRange(e+2,5).setValue(location_tag.join(", "));
+    ss_output.getRange(e+2,6).setValue(other_tag.join(", "));
+    Empty_value();    
+  };
+}
+
+
+
+
+
