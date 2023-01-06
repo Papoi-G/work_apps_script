@@ -1,0 +1,25 @@
+function savePDFs( optSSId, optSheetId ) {
+  //var ss = (optSSId) ? SpreadsheetApp.openById(optSSId) : SpreadsheetApp.getActiveSpreadsheet();
+  //var url = ss.getUrl().replace(/edit$/,'');
+  //var parents = DriveApp.getFileById(ss.getId()).getParents();
+  var url = "https://docs.google.com/spreadsheets/d/17cUFru6U5ACfjt8QQf7Qv7nKzBloNn7ZuJ9wbfOuQjA/";
+  var folders = DriveApp.getFolderById("19CO-pYYs4VsYyKDX4RJNFtQ-B0cJmmVT");  // Modified
+  //var folder = folders.hasNext() ? folders.next() : parents.next();  // Modified
+
+
+  // I didn't have access to the optSSId or optSheetId so my test I added the URL and the active sheet link to the apps script
+  var sheet = SpreadsheetApp.getActiveSpreadsheet(); 
+  var url_ext = 'export?exportFormat=pdf&format=pdf'   //export as pdf
+  + '&size=letter'      // paper size
+  + '&portrait=true'    // orientation, false for landscape
+  + '&fitw=true'        // fit to width, false for actual size
+  + '&sheetnames=false&printtitle=false&pagenumbers=false'  //hide optional headers and footers
+  + '&gridlines=false'  // hide gridlines
+  + '&fzr=false';       // do not repeat row headers (frozen rows) on each page
+  var options = {headers: {'Authorization': 'Bearer ' +  ScriptApp.getOAuthToken()}}
+  var response = UrlFetchApp.fetch(url + url_ext, options);
+  Logger.log(url + url_ext)
+  // var valor = sheet.getRange('D5').getValue();  // Modified
+  var blob = response.getBlob().setName("test" + '.pdf');
+  folders.createFile(blob);
+}
