@@ -1,0 +1,33 @@
+
+function ReplaceCell() {
+
+// Get the sheets you will work with by the name of the tab
+// "Data" is the name of the sheet
+// you should replace it with the name of your existing tab
+
+const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("data");
+let range = sheets.getRange("G2:G").getValues().flat();
+
+// this will filter the cells with information and remove the empty values
+
+range = range.filter((element) => {return (element !== '')});
+
+// The for loop to review all the rows in the G column
+
+for (let i=0 ; i < range.length ; i++){
+
+  //The range conter starts with column A = 1 and G = 7 
+  sheets.getRange(i+2,7).setValue("navigatela.lacity.org/"+range[i]);
+};
+  
+}
+
+
+
+
+=----------------------------------------
+function myFunction() {
+  const add = "navigatela.lacity.org/"; // This is from your question.
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("data"); // Please set your sheet name.
+  sheet.getRange("G2:G" + sheet.getLastRow()).createTextFinder("(^.*$)").useRegularExpression(true).replaceAllWith(`${add}$1`);
+}
